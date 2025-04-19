@@ -235,16 +235,14 @@ class Pyneo4jClient:
             parameters = {}
 
         logger.debug("Checking for open transaction")
-        if getattr(self, "_session", None) is None or getattr(self, "_transaction", None) is None:
-            # Begin a new transaction if none is open
-            await self._begin_transaction()
+        tx = await self._begin_transaction()
 
         try:
             parameters = parameters if parameters is not None else {}
 
             # Run the query and get the results and result keys used in the query
             logger.debug("Running query \n%s \nwith parameters %s", query, parameters)
-            result_data = await cast(AsyncTransaction, self._transaction).run(
+            result_data = await tx.run(
                 query=cast(LiteralString, query), parameters=parameters
             )
 
@@ -266,14 +264,14 @@ class Pyneo4jClient:
                 # If batching is enabled, we don't want to commit the transaction yet as
                 # we might have more queries to run
                 logger.debug("No batching enabled, committing transaction")
-                await self._commit_transaction()
+                await tx.commit()
 
             return results, meta
         except Exception as exc:
             logger.error("Error running query %s", exc)
             if self._batch_enabled is False:
                 # The same goes for rolling back the transaction when batching is enabled
-                await self._rollback_transaction()
+                await tx.rollback()
 
             raise exc
 
