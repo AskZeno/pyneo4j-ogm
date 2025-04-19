@@ -235,7 +235,7 @@ class Pyneo4jClient:
             parameters = {}
 
         logger.debug("Checking for open transaction")
-        tx = await self._begin_transaction()
+        tx = await self._session.begin_transaction()
 
         try:
             parameters = parameters if parameters is not None else {}
