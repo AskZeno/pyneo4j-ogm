@@ -267,7 +267,7 @@ class PatternNodeOperatorsModel(BaseModel):
     """
 
     element_id_: Optional[str] = Field(alias="$elementId", default=None)
-    id_: Optional[int] = Field(alias="$id")
+    id_: Optional[int] = Field(alias="$id", default=None)
     labels_: Optional[Union[List[str], str]] = Field(alias="$labels", default=None)
 
     if IS_PYDANTIC_V2:
