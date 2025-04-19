@@ -235,6 +235,7 @@ class Pyneo4jClient:
             parameters = {}
 
         logger.debug("Checking for open transaction")
+        self._session = cast(AsyncDriver, self._driver).session(bookmarks=self._used_bookmarks)
         tx = await self._session.begin_transaction()
 
         try:
